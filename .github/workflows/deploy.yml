@@ -92,13 +92,14 @@ jobs:
         mkdir -p ~/.ssh
         echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
         chmod 600 ~/.ssh/id_rsa
+
+    - name: Run Ansible Playbook with Dynamic Inventory
+      run: |
         # Test inventory parsing
         ansible-inventory --graph
         # Test SSH connection
         ansible all -m ping
-        
-    - name: Run Ansible Playbook with Dynamic Inventory
-      run: ansible-playbook  -i inventory/aws_ec2.yml deploy.yml
+        ansible-playbook  -i inventory/aws_ec2.yml deploy.yml
       env:
         ANSIBLE_CONFIG: ${{ github.workspace }}/ansible/ansible.cfg
         ANSIBLE_HOST_KEY_CHECKING: False
