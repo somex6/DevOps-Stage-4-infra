@@ -90,8 +90,12 @@ jobs:
     - name: Configure SSH
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" | base64 -d > ~/.ssh/id_rsa
+        chmod 700 ~/.ssh
         chmod 600 ~/.ssh/id_rsa
+        # Add target host to known_hosts
+        ssh-keyscan -H ${{ secrets.TARGET_IP }} >> ~/.ssh/known_hosts
+
 
     - name: Run Ansible Playbook with Dynamic Inventory
       run: |
@@ -99,7 +103,7 @@ jobs:
         ansible-inventory --graph
         # Test SSH connection
         ansible all -m ping
-        ansible-playbook  -i inventory/aws_ec2.yml deploy.yml
+        ansible-playbook -i inventory/aws_ec2.yml deploy.yml
       env:
         ANSIBLE_CONFIG: ${{ github.workspace }}/ansible/ansible.cfg
         ANSIBLE_HOST_KEY_CHECKING: False
