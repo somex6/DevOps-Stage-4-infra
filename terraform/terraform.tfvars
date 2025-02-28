@@ -21,11 +21,11 @@ sg-name       = "hng-stage-4-sg"
 ingress_rules = ["https-443-tcp", "ssh-tcp", "http-80-tcp"]
 
 ##### DNS #########
-dns_zone    = "hngprog.com"
-record_name = "stage-4.hngprog.com"
+dns_zone    = "hngprog.biz"
+record_name = "stage-4.hngprog.biz"
 type        = "A"
 ttl         = 300
 
 ####  ACM ####
-subject_alternative_names = ["stage-4.hngprog.com"]
+subject_alternative_names = ["stage-4.hngprog.biz"]
 validation_method         = "DNS"
