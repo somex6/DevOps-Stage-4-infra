@@ -3,6 +3,5 @@
   community.docker.docker_compose_v2:
     project_src: "{{ app_clone_dir }}"
     build: always
-    detached: yes
   become: yes
   register: output
