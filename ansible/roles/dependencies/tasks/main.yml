@@ -24,7 +24,7 @@
     repo: >-
       deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc]
       https://download.docker.com/linux/ubuntu
-      {{ ansible_lsb.codename }} stable
+      {{ ansible_lsb.codename }} edge
     filename: docker.list
     update_cache: yes
 
