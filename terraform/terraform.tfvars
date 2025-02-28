@@ -2,7 +2,7 @@ tags = { Name = "hng-stage-4" }
 
 #### Networking ####
 azs                  = ["us-east-1a"]
-cidr                 = "10.20.0.0"
+cidr                 = "10.20.0.0/16"
 public_subnets       = ["10.20.30.0"]
 vpc_name             = "hng-stage-4-vpc"
 enable_dns_hostnames = true
