@@ -325,5 +325,11 @@
       - containerd.io
       - docker-buildx-plugin
       - docker-compose-plugin
-      - docker-compose
     state: present
+
+- name: Clone application repository
+  git:
+    repo: "{{ app_repo_url }}"
+    dest: "{{ app_clone_dir }}"
+    version: main
+    update: yes
