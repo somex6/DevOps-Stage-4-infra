@@ -22,15 +22,15 @@
     name: ca-certificates
     state: latest
 
-- name: Upgrade Python packages
-  pip:
-    name:
-      - urllib3
-      - pyOpenSSL
-      - requests
-    state: latest
-    executable: pip3
-    
+# - name: Upgrade Python packages
+#   pip:
+#     name:
+#       - urllib3
+#       - pyOpenSSL
+#       - requests
+#     state: latest
+#     executable: pip3
+
 - name: Add Docker's official GPG key (recommended method)
   ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
