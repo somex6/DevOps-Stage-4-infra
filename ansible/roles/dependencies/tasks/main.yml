@@ -63,8 +63,7 @@
 #       - docker-compose
 #     state: present
 
-
-- name: Ensure prerequisites
+- name: Install prerequisites
   apt:
     name:
       - ca-certificates
@@ -74,30 +73,27 @@
     state: present
     update_cache: yes
 
-- name: Create trusted key directory
+- name: Create APT key directory
   file:
     path: /etc/apt/keyrings
     state: directory
     mode: 0755
 
-- name: Add Docker's GPG key (correct method)
-  shell: |
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | 
-    gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-  args:
-    creates: /etc/apt/keyrings/docker.gpg
+- name: Clean previous Docker configurations
+  include_tasks: clean-docker.yml  # Contains the cleanup block above
 
-- name: Add Docker repository (verified structure)
+- name: Add Docker GPG key
+  get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.gpg
+    mode: 0644
+
+- name: Add Docker repository (with Noble workaround)
   apt_repository:
-    repo: "deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ 'jammy' if ansible_distribution_release == 'noble' else ansible_distribution_release }} stable"
     filename: docker
     state: present
     update_cache: yes
-
-- name: Explicit update package cache
-  apt:
-    update_cache: yes
-    cache_valid_time: 3600
 
 - name: Install Docker components
   apt:
