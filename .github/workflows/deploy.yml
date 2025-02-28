@@ -95,6 +95,7 @@ jobs:
 
     - name: Run Ansible Playbook with Dynamic Inventory
       run: |
+        ansible-galaxy collection install community.docker
         ansible-playbook -i inventory/aws_ec2.yml deploy.yml
       env:
         ANSIBLE_CONFIG: ${{ github.workspace }}/ansible/ansible.cfg

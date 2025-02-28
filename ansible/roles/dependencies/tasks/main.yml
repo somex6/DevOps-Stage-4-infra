@@ -1,33 +1,55 @@
----
-- name: Install prerequisite packages
+- name: Install prerequisites
   apt:
-    name: ["curl", "git", "python3-pip"]
+    name:
+      - ca-certificates
+      - curl
     state: present
     update_cache: yes
 
-- name: Include Docker role
-  include_role:
-    name: geerlingguy.docker
-
-- name: Install Docker Compose
-  get_url:
-    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-{{ ansible_architecture }}"
-    dest: /usr/local/bin/docker-compose
+- name: Create Docker GPG key directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
     mode: '0755'
-  register: docker_compose_install
-  until: docker_compose_install is succeeded
-  retries: 3
-  delay: 10
 
-- name: Verify Docker Compose installation
-  command: docker-compose --version
-  register: docker_compose_check
-  changed_when: false
-  failed_when: docker_compose_check.rc != 0
+- name: Add Docker's official GPG key
+  get_url:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    dest: /etc/apt/keyrings/docker.asc
+    mode: '0644'
 
-- name: Clone application repository
-  git:
-    repo: "{{ app_repo_url }}"
-    dest: "{{ app_clone_dir }}"
-    version: main
-    update: yes
+- name: Add Docker repository
+  apt_repository:
+    repo: >-
+      deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc]
+      https://download.docker.com/linux/ubuntu
+      {{ ansible_distribution_release }} stable
+    filename: docker
+    state: present
+
+- name: Update package cache (after repo add)
+  apt:
+    update_cache: yes
+
+- name: Install Docker components
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+      - docker-compose
+    state: present
+
+- name: Ensure Docker service is running
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Add current user to docker group
+  user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: yes
