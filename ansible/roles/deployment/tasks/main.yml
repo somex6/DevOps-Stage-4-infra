@@ -1,0 +1,11 @@
+---
+- name: Deploy application stack
+  community.docker.docker_compose:
+    project_src: "{{ app_clone_dir }}"
+    files:
+      - "{{ compose_file_name }}"
+    build: yes
+    pull: yes
+    restart: yes
+    detached: yes
+  become: yes

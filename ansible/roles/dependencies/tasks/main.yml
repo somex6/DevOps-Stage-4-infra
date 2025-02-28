@@ -1,0 +1,33 @@
+---
+- name: Install prerequisite packages
+  apt:
+    name: ["curl", "git", "python3-pip"]
+    state: present
+    update_cache: yes
+
+- name: Include Docker role
+  include_role:
+    name: geerlingguy.docker
+
+- name: Install Docker Compose
+  get_url:
+    url: "https://github.com/docker/compose/releases/download/{{ docker_compose_version }}/docker-compose-linux-{{ ansible_architecture }}"
+    dest: /usr/local/bin/docker-compose
+    mode: '0755'
+  register: docker_compose_install
+  until: docker_compose_install is succeeded
+  retries: 3
+  delay: 10
+
+- name: Verify Docker Compose installation
+  command: docker-compose --version
+  register: docker_compose_check
+  changed_when: false
+  failed_when: docker_compose_check.rc != 0
+
+- name: Clone application repository
+  git:
+    repo: "{{ app_repo_url }}"
+    dest: "{{ app_clone_dir }}"
+    version: main
+    update: yes
