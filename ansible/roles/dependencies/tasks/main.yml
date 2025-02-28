@@ -128,9 +128,9 @@
 #         cache_valid_time: 1
 #   ignore_errors: yes
 
-- name: Update apt package index
-  apt:
-    update_cache: yes
+# - name: Update apt package index
+#   apt:
+#     update_cache: yes
 
 - name: Install required packages
   apt:
@@ -157,9 +157,9 @@
   args:
     executable: /bin/bash
 
-- name: Update apt package index again
-  apt:
-    update_cache: yes
+# - name: Update apt package index again
+#   apt:
+#     update_cache: yes
 
 - name: Install Docker components
   apt:
