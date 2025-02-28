@@ -1,7 +1,7 @@
 ---
 - name: Deploy application stack
   community.docker.docker_compose_v2:
-    project_src: "{{ app_clone_dir }}"
+    project_src: "{{ app_clone_dir }}/{{ repo_name }}"
     build: always
   become: yes
   register: output
