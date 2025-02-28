@@ -11,14 +11,40 @@ module "security-group" {
 }
 
 
-module "security-group-tes" {
-  source  = "terraform-aws-modules/security-group/aws"
-  version = "5.1.0"
+resource "aws_security_group" "allow_tls" {
+  name        = "allow_tls"
+  description = "Allow TLS inbound traffic"
+  vpc_id      = module.vpc.vpc_id
+  ingress {
+    description = "TLS from VPC"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = "0.0.0.0/0"
+  }
+  ingress {
+    description = "TLS from VPC"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = "0.0.0.0/0"
+  }
+  ingress {
+    description = "TLS from VPC"
+    from_port   = 21
+    to_port     = 21
+    protocol    = "tcp"
+    cidr_blocks = "0.0.0.0/0"
+  }
 
-  name          = "tset-sg"
-  description   = var.description
-  vpc_id        = module.vpc.vpc_id
-  ingress_rules = var.ingress_rules
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-  tags = var.tags
+  tags = {
+    Name = "allow_tls"
+  }
 }
