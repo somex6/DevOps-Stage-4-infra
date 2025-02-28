@@ -71,12 +71,6 @@ variable "user_data" {
   default     = ""
 }
 
-variable "tags" {
-  default     = {}
-  description = "A mapping of tags to assign to the resource"
-  type        = map(string)
-}
-
 variable "associate_public_ip_address" {
   type        = bool
   default     = false
@@ -100,12 +94,6 @@ variable "description" {
   description = "Description of security group"
   type        = string
   default     = "Security Group managed by Terraform"
-}
-
-variable "tags" {
-  description = "A mapping of tags to assign to security group"
-  type        = map(string)
-  default     = {}
 }
 
 variable "ingress_rules" {
