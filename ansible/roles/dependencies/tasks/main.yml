@@ -6,21 +6,21 @@
     state: present
     update_cache: yes
 
-- name: Create Docker GPG key directory
-  file:
-    path: /etc/apt/keyrings
-    state: directory
-    mode: '0755'
+# - name: Create Docker GPG key directory
+#   file:
+#     path: /etc/apt/keyrings
+#     state: directory
+#     mode: '0755'
 
 # - name: Add Docker's official GPG key
 #   get_url:
 #     url: https://download.docker.com/linux/ubuntu/gpg
 #     dest: /etc/apt/keyrings/docker.asc
 #     mode: '0644'
-- name: Update CA certificates
-  apt:
-    name: ca-certificates
-    state: latest
+# - name: Update CA certificates
+#   apt:
+#     name: ca-certificates
+#     state: latest
 
 # - name: Upgrade Python packages
 #   pip:
@@ -31,20 +31,42 @@
 #     state: latest
 #     executable: pip3
 
-- name: Add Docker's official GPG key (recommended method)
+- name: Create APT keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Add Docker GPG key
   ansible.builtin.apt_key:
     url: https://download.docker.com/linux/ubuntu/gpg
+    keyring: /etc/apt/keyrings/docker.asc
     state: present
-  when: ansible_os_family == 'Debian'
 
-- name: Add Docker repository
-  apt_repository:
+- name: Add Docker repository 
+  ansible.builtin.apt_repository:
     repo: >-
       deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc]
       https://download.docker.com/linux/ubuntu
       {{ ansible_distribution_release }} stable
     filename: docker
     state: present
+    update_cache: yes
+
+# - name: Add Docker's official GPG key 
+#   ansible.builtin.apt_key:
+#     url: https://download.docker.com/linux/ubuntu/gpg
+#     state: present
+#   when: ansible_os_family == 'Debian'
+
+# - name: Add Docker repository
+#   apt_repository:
+#     repo: >-
+#       deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc]
+#       https://download.docker.com/linux/ubuntu
+#       {{ ansible_distribution_release }} stable
+#     filename: docker
+#     state: present
 
 - name: Update package cache (after repo add)
   apt:
