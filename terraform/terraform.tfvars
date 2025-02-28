@@ -1,6 +1,7 @@
-tags = { Name = hng-stage-4 }
+tags = { Name = "hng-stage-4" }
 
-azs                  = [us-east-1a]
+#### Networking ####
+azs                  = ["us-east-1a"]
 cidr                 = "10.20.0.0"
 public_subnets       = ["10.20.30.0"]
 vpc_name             = "hng-stage-4-vpc"
