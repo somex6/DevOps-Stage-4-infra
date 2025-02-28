@@ -50,9 +50,9 @@ jobs:
 
   ansible:
     name: Ansible Deployment
-    needs: terraform
+    # needs: terraform
     runs-on: ubuntu-latest
-    environment: production
+    # environment: production
     defaults:
       run:
         working-directory: ./ansible
