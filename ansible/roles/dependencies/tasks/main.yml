@@ -32,19 +32,20 @@
 #     executable: pip3
 
 - name: Create APT keyrings directory
-  ansible.builtin.file:
+  file:
     path: /etc/apt/keyrings
     state: directory
-    mode: '0755'
+    mode: 0755
 
-- name: Add Docker GPG key
-  ansible.builtin.apt_key:
+- name: Download Docker GPG key
+  get_url:
     url: https://download.docker.com/linux/ubuntu/gpg
-    keyring: /etc/apt/keyrings/docker.asc
-    state: present
+    dest: /etc/apt/keyrings/docker.asc
+    mode: 0644
+    # validate_certs: no  # Temporary workaround for SSL issues
 
-- name: Add Docker repository 
-  ansible.builtin.apt_repository:
+- name: Add Docker repository
+  apt_repository:
     repo: >-
       deb [arch={{ ansible_architecture }} signed-by=/etc/apt/keyrings/docker.asc]
       https://download.docker.com/linux/ubuntu
