@@ -157,9 +157,16 @@
   args:
     executable: /bin/bash
 
-# - name: Update apt package index again
-#   apt:
-#     update_cache: yes
+- name: Update apt package index again
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  register: apt_update_result
+  retries: 3
+  delay: 5
+  until: apt_update_result is success
+  ignore_errors: "{{ ansible_check_mode }}"
+  become: yes
 
 - name: Install Docker components
   apt:
