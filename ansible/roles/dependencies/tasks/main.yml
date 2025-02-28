@@ -1,11 +1,18 @@
-# - name: Install prerequisites
+# - name: Update and upgrade apt packages
+#   become: true
 #   apt:
-#     name:
-#       - ca-certificates
-#       - curl
-#       - gnupg
-#     state: present
+#     upgrade: yes
 #     update_cache: yes
+#     cache_valid_time: 86400 
+
+- name: Install prerequisites
+  apt:
+    name:
+      - ca-certificates
+      - curl
+      - gnupg
+    state: present
+    update_cache: yes
 
 # - name: Create APT key directory
 #   file:
@@ -48,9 +55,7 @@
 # #     filename: docker
 # #     state: present
 
-# # - name: Update package cache 
-# #   apt:
-# #     update_cache: yes
+
 
 # - name: Install Docker components
 #   apt:
@@ -105,30 +110,30 @@
 #       - docker-compose-plugin
 #     state: present
 
-- name: Remove conflicting Docker configurations
-  block:
-    - name: Remove existing key files
-      file:
-        path: "{{ item }}"
-        state: absent
-      loop:
-        - /etc/apt/keyrings/docker.asc
-        - /etc/apt/keyrings/docker.gpg
-        - /etc/apt/trusted.gpg.d/docker.gpg
+# - name: Remove conflicting Docker configurations
+#   block:
+#     - name: Remove existing key files
+#       file:
+#         path: "{{ item }}"
+#         state: absent
+#       loop:
+#         - /etc/apt/keyrings/docker.asc
+#         - /etc/apt/keyrings/docker.gpg
+#         - /etc/apt/trusted.gpg.d/docker.gpg
 
-    - name: Remove repository files
-      file:
-        path: "{{ item }}"
-        state: absent
-      loop:
-        - /etc/apt/sources.list.d/docker.list
-        - /etc/apt/sources.list.d/docker.list.save
+#     - name: Remove repository files
+#       file:
+#         path: "{{ item }}"
+#         state: absent
+#       loop:
+#         - /etc/apt/sources.list.d/docker.list
+#         - /etc/apt/sources.list.d/docker.list.save
 
-    - name: Clean package cache
-      apt:
-        update_cache: yes
-        cache_valid_time: 1
-  ignore_errors: yes
+#     - name: Clean package cache
+#       apt:
+#         update_cache: yes
+#         cache_valid_time: 1
+#   ignore_errors: yes
 
 - name: Create APT key directory
   file:
@@ -136,17 +141,30 @@
     state: directory
     mode: 0755
 
-- name: Add Docker GPG key (correct method)
+- name: Add Docker GPG key 
   get_url:
     url: https://download.docker.com/linux/ubuntu/gpg
     dest: /etc/apt/keyrings/docker.gpg
     mode: 0644
 
-- name: Add Docker repository (Ubuntu 24.04 Noble workaround)
-  apt_repository:
-    repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ 'jammy' if ansible_distribution_release == 'noble' else ansible_distribution_release }} stable"
-    filename: docker
-    state: present
+# - name: Add Docker repository 
+#   apt_repository:
+#     repo: "deb [arch=amd64 signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ 'jammy' if ansible_distribution_release == 'noble' else ansible_distribution_release }} stable"
+#     filename: docker
+#     state: present
+#     update_cache: yes
+
+- name: Add Docker repository
+  script: |
+    #!/bin/bash
+    set -e
+    echo \
+      "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+      $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") stable" | \
+      tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+- name: Update package cache 
+  apt:
     update_cache: yes
 
 - name: Install Docker components
@@ -158,7 +176,7 @@
       - docker-buildx-plugin
       - docker-compose-plugin
     state: present
-    
+
 - name: Ensure Docker service is running
   service:
     name: docker
