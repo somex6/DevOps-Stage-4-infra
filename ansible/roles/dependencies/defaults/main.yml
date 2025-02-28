@@ -1,0 +1,6 @@
+docker_users:
+  - "{{ ansible_user }}"
+docker_compose_version: "v2.27.0"
+app_repo_url: "https://github.com/somex6/DevOps-Stage-4.git"
+app_clone_dir: "/home/{{ ansible_user }}"
+repo_name: "DevOps-Stage-4"

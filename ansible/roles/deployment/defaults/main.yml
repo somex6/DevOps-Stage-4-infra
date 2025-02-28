@@ -1,0 +1,2 @@
+app_clone_dir: "/home/{{ ansible_user }}/{{ repo_name}}"
+compose_file_name: "docker-compose.yml"
