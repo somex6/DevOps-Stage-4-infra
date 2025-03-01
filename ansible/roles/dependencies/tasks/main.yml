@@ -60,3 +60,9 @@
     dest: "{{ app_clone_dir }}"
     version: main
     update: yes
+
+- name: Create acme.json file
+  file:
+    path: "{{ app_clone_dir }}/acme.json"
+    state: file
+    mode: '0600'
