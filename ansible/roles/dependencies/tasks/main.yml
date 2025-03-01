@@ -64,5 +64,5 @@
 - name: Create acme.json file
   file:
     path: "{{ app_clone_dir }}/acme.json"
-    state: file
+    state: touch
     mode: '0600'
