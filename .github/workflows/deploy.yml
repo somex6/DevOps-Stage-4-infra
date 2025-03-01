@@ -11,46 +11,46 @@ env:
   ANSIBLE_VERSION: 8.7.0
 
 jobs:
-  # terraform:
-  #   name: Terraform Plan/Apply
-  #   runs-on: ubuntu-latest
-  #   environment: production
-  #   defaults:
-  #     run:
-  #       working-directory: ./terraform
+  terraform:
+    name: Terraform Plan/Apply
+    runs-on: ubuntu-latest
+    environment: production
+    defaults:
+      run:
+        working-directory: ./terraform
 
-  #   steps:
-  #   - name: Checkout code
-  #     uses: actions/checkout@v4
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-  #   - name: Setup Terraform
-  #     uses: hashicorp/setup-terraform@v2
-  #     with:
-  #       terraform_version: ${{ env.TF_VERSION }}
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: ${{ env.TF_VERSION }}
 
-  #   - name: Terraform Init
-  #     run: terraform init --backend-config=backend.conf -backend-config="access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" -backend-config="secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+    - name: Terraform Init
+      run: terraform init --backend-config=backend.conf -backend-config="access_key=${{ secrets.AWS_ACCESS_KEY_ID }}" -backend-config="secret_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}"
 
-  #   - name: Terraform Validate
-  #     run: terraform validate
+    - name: Terraform Validate
+      run: terraform validate
 
-  #   - name: Terraform Plan
-  #     id: plan
-  #     run: terraform plan -out=tfplan
-  #     env:
-  #       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - name: Terraform Plan
+      id: plan
+      run: terraform plan -out=tfplan
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-  #   - name: Terraform Apply
-  #     if: github.ref == 'refs/heads/main'
-  #     run: terraform apply -auto-approve tfplan
-  #     env:
-  #       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+    - name: Terraform Apply
+      if: github.ref == 'refs/heads/main'
+      run: terraform apply -auto-approve tfplan
+      env:
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
   ansible:
     name: Ansible Deployment
-    # needs: terraform
+    needs: terraform
     runs-on: ubuntu-latest
     # environment: production
     defaults:
@@ -80,12 +80,11 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ${{ env.AWS_REGION }}
 
-    - name: Set AWS environment variables
-      run: |
-        echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
-        echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
-        echo "AWS_REGION=us-east-1" >> $GITHUB_ENV
-        aws sts get-caller-identity
+    # - name: Set AWS environment variables
+    #   run: |
+    #     echo "AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}" >> $GITHUB_ENV
+    #     echo "AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}" >> $GITHUB_ENV
+    #     echo "AWS_REGION=us-east-1" >> $GITHUB_ENV
 
     - name: Configure SSH
       run: |
